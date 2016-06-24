@@ -1,0 +1,68 @@
+﻿
+@{
+    ViewBag.Title = "Inside";
+}
+
+<h2>Inside</h2>
+
+<div class="row">
+    <div class="col-md-3">
+        <button id="nextA" class="btn btn-primary btn-block disabled">Next</button>
+        <button id="servedA" class="btn btn-success btn-block disabled">Served</button>
+        <button id="canceledA" class="btn btn-danger btn-block disabled">Canceled</button>
+    </div>
+    <div class="col-md-5">
+        <div class="table-responsive" style="height: 550px; overflow: hidden;">
+            <table class="table" id="tableA"></table>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    @Html.ActionLink("Report", "GetReport", "Report")
+</div>
+
+@section scripts {
+    <script>
+        $(document).ready(function(){
+            updateWaitingLists();
+            changeClass();
+            function updateWaitingLists() {
+                $.ajax({
+                    type: "GET",
+                    url: "@Url.Action("GetWaitingList", "Home")",
+                    success: function(data) {
+                        var tableA = $("#tableA");
+                        var tableB = $("#tableB");
+                        var tableAContent = '';
+                        var tableBContent = '';
+                        $.each(data, function(index, item) {
+                            tableAContent += "<tr><td>" + item.ServiceNumber.toString() + "</td>" +
+                                "<td>" + item.ServiceType.toString() + "</td></tr>";
+                        });
+                        var typeB = '';
+                        var typeA = '';
+                        $.each(data, function(index, item) {
+                            if (item.ServiceType == 'B') {
+                                typeB += "<tr><td>" + item.ServiceNumber.toString() + "</td>" +
+                                    "<td>" + item.ServiceType.toString() + "</td></tr>";
+                            } else {
+                                typeA += "<tr><td>" + item.ServiceNumber.toString() + "</td>" +
+                                "<td>" + item.ServiceType.toString() + "</td></tr>";
+                            }
+                        });
+                        tableA.html(tableAContent);
+                        tableB.html(typeB + typeA);
+                    },
+                error: function(r, e) {
+                    alert("Error populating tables!");
+                }
+            });
+            }
+            function changeClass() {
+                $("#tableA tr:first-child").addClass("active");
+            }
+           
+        });
+    </script>
+}

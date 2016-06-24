@@ -1,0 +1,56 @@
+﻿@using Resources
+@{
+    ViewBag.Title = "Enter";
+}
+
+<h2>Enter</h2>
+
+<div class="row" style="margin-left:80px;">
+    <div id="wrapper">
+        <div class="col-md-offset-1 col-md-4">
+            <div >
+                <button id="fizicko-lice" class="btn btn-block btn-primary enterButton">@Global.FIZICKO_LICE</button>
+            </div>
+        </div>
+        <div class="col-md-offset-1 col-md-4">
+            <div>
+                <button id="pravno-lice" class="btn btn-block btn-success enterButton">@Global.PRAVNO_LICE</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    @Html.ActionLink("Client", "Client")
+</div>
+
+@section scripts
+{
+    <script>
+    $(document).ready(function(){
+        $("#fizicko-lice").click(function() {
+                queueTake('A');
+            });
+
+            $("#pravno-lice").click(function() {
+                queueTake('B');
+            });
+
+            function queueTake(type) {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("TakeNumber", "Home")",
+                    data: { ServiceType: type },
+                    success: function(data) {
+                    
+                    alert("Uspesno podignat broj za shalter");
+                    },
+                    error: function(r, e) {
+                    alert('Greska!');
+                    }
+
+                    });
+            }
+    });
+    </script>
+}

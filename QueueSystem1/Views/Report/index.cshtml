@@ -1,0 +1,94 @@
+﻿@using Resources
+@model QueueSystem1.ViewModels.ReportQueueDataViewModel
+
+@{
+    ViewBag.Title = "index";
+}
+
+<h2>@Global.REPORTS</h2>
+<input type="hidden" value="@Model.ReportDate" id="reportDate"/>
+<div class="row">
+    <div class='col-md-2'>
+        <div class="form-group">
+            <div class='input-group date' id='datetimepicker1'>
+                <input type='text' class="form-control datepicker" />
+                <span class="input-group-addon ">
+                    <span class="glyphicon glyphicon-calendar"></span>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-5">
+        <table class="table table-bordered table-hover">
+            <thead>
+            <tr>
+                <th>@Global.STATUS</th>
+                <th>@Global.FIRST</th>
+                <th>@Global.SECOND</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr>
+                <td>@Global.SERVED_CUSTOMERS</td>
+                <td id="noServedFirst">@Model.NumberOfServicedPersonsA.ToString()</td>
+                <td id="noServedSecond">@Model.NumberOfServicedPersonsB.ToString()</td>
+            </tr>
+            <tr>
+                <td>@Global.SERVED_CUSTOMERS_ANOTHER</td>
+                <td>@Model.NumberOfServicedPersonsADiff.ToString()</td>
+                <td>@Model.NumberOfServicedPersonsBDiff.ToString()</td>
+            </tr>
+            <tr>
+                <td>@Global.CANCELED_CUSTOMERS</td>
+                <td>@Model.NumberOfCanceledA.ToString()</td>
+                <td>@Model.NumberOfCanceledB.ToString()</td>
+            </tr>
+            </tbody>
+        </table>
+
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-3">
+        @Html.ActionLink("Home","Index","Home")
+    </div>
+</div>
+
+@section scripts
+{
+    <script type="text/javascript">
+        $(function () { // will trigger when the document is ready
+            var dateElement = $('#datetimepicker1');
+
+            dateElement.datepicker({
+                autoclose: true,
+                format: 'dd.mm.yyyy',
+                daysOfWeekDisabled: [6, 0],
+                startDate: '18.06.2016'
+            }); //Initialise any date pickers
+
+            // set the date
+            var date1 = $("#reportDate").val();
+            dateElement.datepicker('setDate', date1.slice(0,10));
+
+            dateElement.datepicker().on('changeDate', function (ev) {
+                var rDate = ev.format('yyyy-mm-dd');
+                var url = "@Url.Action("GetReport", "Report",new{ reportDate = "rDate"})";
+                url = url.replace("rDate", rDate);
+                window.location = url;
+
+                @*$.get("@Url.Action("GetReport","Report")", { id : 34 } ,function(data) {
+                        return false;
+                    });*@
+            });
+
+        });
+
+
+    </script>
+}
+

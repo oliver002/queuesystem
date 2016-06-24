@@ -1,0 +1,105 @@
+﻿
+@{
+    ViewBag.Title = "Client";
+}
+
+<h2>Client</h2>
+<div class="row">
+    <div class="col-md-3">
+        <div class="row">
+            <div class="page-header">
+                <h1>
+                    <span id="servingNumberA"></span>
+                    <span id="servingTypeA"></span>
+                </h1>
+            </div>
+        </div>
+        <div class="row">
+            <div class="table-responsive" style="height: 250px; overflow: hidden;">
+                <table class="table" id="tableA"></table>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-9">
+        <iframe width="985" height="540" src="https://www.youtube.com/embed/S2nBBMbjS8w?autoplay=1;controls=0;loop=1;showinfo=0" frameborder="0"></iframe>
+    </div>
+</div>
+
+<div class="row">
+    @Html.ActionLink("Inside", "Inside")
+</div>
+
+@section scripts 
+{
+    <script>
+        $(document).ready(function () {
+            startServing('A');
+                $.ajax({
+                    type: "GET",
+                    url: "@Url.Action("GetWaitingList", "Home")",
+                    success: function(data) {
+                        var tableA = $("#tableA");
+                        var tableB = $("#tableB");
+                        var tableAContent = '';
+                        var tableBContent = '';
+                        $.each(data, function(index, item) {
+                            tableAContent += "<tr><td>" + item.ServiceNumber.toString() + "</td>" +
+                                "<td>" + item.ServiceType.toString() + "</td></tr>";
+                        });
+                        var typeB = '';
+                        var typeA = '';
+                        $.each(data, function(index, item) {
+                            if (item.ServiceType == 'B') {
+                                typeB += "<tr><td>" + item.ServiceNumber.toString() + "</td>" +
+                                    "<td>" + item.ServiceType.toString() + "</td></tr>";
+                            } else {
+                                typeA += "<tr><td>" + item.ServiceNumber.toString() + "</td>" +
+                                "<td>" + item.ServiceType.toString() + "</td></tr>";
+                            }
+                        });
+                        tableA.html(tableAContent);
+                        tableB.html(typeB + typeA);
+                    },
+                error: function(r, e) {
+                    alert("Error populating tables!");
+                }
+                });
+
+            function startServing(type) {
+                $.ajax({
+                    type: "POST",
+                    url: "@Url.Action("StartServing", "Home")",
+                    data: { ServiceType: type },
+                success: function(data) {
+                    if (type == 'A') {
+                        if (data.Id == 0) {
+                            $('#servingNumberA').html('END');
+                        } else {
+                            $('#servingNumberA').html(data.ServiceNumber);
+                            $("#servingTypeA").html(data.ServiceType);
+                            $("#servedA, #canceledA").attr("disabled", false);
+                            $("#nextA").attr("disabled", true);
+                        }
+                    }
+                    if (type == 'B') {
+                        if (data.Id == 0) {
+                            $('#servingNumberB').html('END');
+                        } else {
+                            $('#servingNumberB').html(data.ServiceNumber);
+                            $('#servingTypeB').html(data.ServiceType);
+                            $("#servedB, #canceledB").attr("disabled", false);
+                            $("#nextB").attr("disabled", true);
+                        }
+                    }
+                    updateWaitingLists();
+                },
+                error: function(r, e) {
+                    alert('Greska!');
+                }
+
+            });
+        }
+        
+        });
+    </script>
+}
